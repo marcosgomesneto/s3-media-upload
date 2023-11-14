@@ -23,21 +23,18 @@ class Core
 
     public function __construct()
     {
-
         new Admin();
-        add_action('woocommerce_after_product_object_save', [$this, 'before_product_save']);
-        //add_filter('upload_dir', [$this, 'upload_dir']);
+        add_action('woocommerce_after_product_object_save', [$this, 'after_product_save']);
 
         //Replace attachment URLs requests
         add_filter('wp_get_attachment_url', [$this, 'get_attachment_url'], 100, 2);
-        add_filter('wp_get_attachment_image_attributes', [$this, 'get_attachment_image_attributes'], 100, 3);
+        add_filter('wp_calculate_image_srcset', [$this, 'wp_calculate_image_srcset'], 10, 5);
+        //add_filter('wp_get_attachment_image_attributes', [$this, 'get_attachment_image_attributes'], 100, 3);
 
+        // Srcset handling
+        add_filter('wp_image_file_matches_image_meta', [$this, 'image_file_matches_image_meta'], 10, 4);
 
         add_filter('wp_generate_attachment_metadata', [$this, 'generate_attachment_metadata'], 100, 3);
-        /*         add_action('add_attachment', [$this, 'add_attachment']);
-        
-        add_filter('update_attached_file', [$this, 'update_attached_file'], 10, 2);
-        add_filter('wp_update_attachment_metadata', [$this, 'update_attachment_metadata'], 10, 2); */
         add_filter('plugin_action_links_' . \S3_MEDIA_UPLOAD_BASE_NAME, [$this, 'plugin_action_links']);
     }
 
@@ -47,7 +44,7 @@ class Core
      * @param WC_Product $product
      * @return void
      */
-    public function before_product_save($product)
+    public function after_product_save($product)
     {
         try {
             $this->upload($product);
@@ -64,7 +61,7 @@ class Core
      */
     private function upload($product)
     {
-        if ($this->currentProduct == $product->get_id())
+        if ($this->currentProduct == $product->get_id() || !$product->is_downloadable())
             return;
 
         $this->currentProduct = $product->get_id();
@@ -74,7 +71,11 @@ class Core
         if ($uploaded == 'yes') return;
 
         $wp_upload_dir = wp_upload_dir();
-        $download = end($product->get_downloads());
+
+        $downloads = $product->get_downloads();
+        if (empty($downloads)) return;
+
+        $download = end($downloads);
         $uploadUrl = $wp_upload_dir['baseurl'];
         $currentFilePath = str_replace($uploadUrl, '', $download['file']);
         $local_file_path = $wp_upload_dir['basedir'] . $currentFilePath;
@@ -88,7 +89,12 @@ class Core
         }
 
         update_post_meta($this->currentProduct, '_s3mu_uploaded', 'yes');
-        unlink($local_file_path);
+
+        $config = Config::get();
+
+        if ($config->remove_local) {
+            unlink($local_file_path);
+        }
     }
 
     /**
@@ -137,52 +143,6 @@ class Core
 
         return array_merge($pluginLinks, $links);
     }
-
-    /**
-     * Update attached file hook
-     *
-     * @param string $file Path to the attached file to update.
-     * @param int $attachment_id
-     * @return void
-     */
-    public function update_attached_file($file, $attachment_id)
-    {
-
-        //throw new Exception('Update atached file' . $file . $attachment_id);
-        return $file;
-    }
-
-    /**
-     * Update attachment metadata
-     *
-     * @param array $data
-     * @param int $post_id
-     * @return void
-     */
-    public function update_attachment_metadata($data, $post_id)
-    {
-
-        //echo "\r\n--------" . print_r($data, true);
-        return $data;
-    }
-
-    public function add_attachment($post_id)
-    {
-        /* $metadata = wp_get_attachment_metadata($post_id);
-        $file = get_attached_file($post_id);
-        echo "\r\n-----meta---" . $file . '---' . print_r($metadata, true) . '-' . $post_id; */
-    }
-
-    /*     public function upload_dir($upload_dir)
-    {
-        $config = Config::get();
-        $bucket_name = $config->bucket_name;
-        $region = $config->region;
-        if (empty($bucket_name) || empty($region)) return $upload_dir;
-        $upload_dir['baseurl'] = "https://$bucket_name.s3.$region.amazonaws.com/uploads";
-        return $upload_dir;
-    } */
-
 
     /**
      * Get url attachment
@@ -243,29 +203,79 @@ class Core
         try {
             $uploads = get_post_meta($attachment_id, '_s3mu_uploads');
             $config = Config::get();
+
+            $relative_dir = dirname($metadata['file']);
+
+            if (!empty($config->include_folders)) {
+                if (!in_array($relative_dir, $config->include_folders)) {
+                    return $metadata;
+                }
+            }
+
             $s3 = S3Service::getInstance();
             $original_file = $config->basedir . '/' .  $metadata['file'];
             $wp_upload_dir = wp_upload_dir();
-            $relative_dir = dirname($metadata['file']);
+
+
+            $files_to_remove = [];
 
             if (!in_array($original_file, $uploads)) {
                 $local_file_path = $wp_upload_dir['basedir'] . '/' . $metadata['file'];
                 $s3->uploadFile($local_file_path);
                 array_push($uploads, $original_file);
+                array_push($files_to_remove, $local_file_path);
             }
 
             foreach ($metadata['sizes'] as $size) {
-                $s3->uploadFile($wp_upload_dir['basedir'] . '/' . $relative_dir . '/' . $size['file']);
+                $local_file_path = $wp_upload_dir['basedir'] . '/' . $relative_dir . '/' . $size['file'];
+                $s3->uploadFile($local_file_path);
                 array_push($uploads, $config->basedir . '/' . $relative_dir .  '/' . $size['file']);
+                array_push($files_to_remove, $local_file_path);
             }
 
 
             update_post_meta($attachment_id, '_s3mu_uploads', $uploads);
             update_post_meta($attachment_id, '_s3mu_status', 'success');
             update_post_meta($attachment_id, '_s3mu_uploaded', 'yes');
+            ////file_put_contents(\S3_MEDIA_UPLOAD_PLUGIN_PATH . "log.txt", "Removing local\r\n", FILE_APPEND);
+            if ($config->remove_local) {
+                foreach ($files_to_remove as $file) {
+                    unlink($file);
+                }
+            }
         } catch (\Exception $e) {
             update_post_meta($attachment_id, '_s3mu_status', 'fail');
         }
         return $metadata;
+    }
+
+    /**
+     * Replace local URLs with provider ones for srcset image sources.
+     *
+     * @param array  $sources
+     * @param array  $size_array
+     * @param string $image_src
+     * @param array  $image_meta
+     * @param int    $attachment_id
+     *
+     * @return array
+     */
+    public function wp_calculate_image_srcset($sources, $size_array, $image_src, $image_meta, $attachment_id)
+    {
+        $uploaded = get_post_meta($attachment_id, '_s3mu_uploaded', true);
+
+        if ($uploaded !== 'yes') return $sources;
+
+        $upload_dir = wp_upload_dir();
+        $s3 = S3Service::getInstance();
+
+        foreach ($sources as $width => $source) {
+            $base_upload = $upload_dir['baseurl'];
+            $remote_url = str_replace($base_upload, '', $source['url']);
+
+            $sources[$width]['url'] = $s3->getBaseUrl() . $remote_url;
+        }
+
+        return $sources;
     }
 }

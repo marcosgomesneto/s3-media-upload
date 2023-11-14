@@ -29,6 +29,24 @@
                         <input name="region" type="text" id="region" value="<?php echo esc_attr($options["region"]); ?>" class="regular-text">
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row"><?php esc_html_e('Remove Local Files', \S3_MEDIA_UPLOAD_I18N_NAME); ?></th>
+                    <td>
+                        <fieldset>
+
+                            <input name="remove_local" type="checkbox" id="remove_local" <?php echo esc_attr($options["remove_local"] == 1 ? 'checked' : ''); ?>>
+                            <label>Remove local files when uploaded in S3</label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><?php esc_html_e('Include upload folders', \S3_MEDIA_UPLOAD_I18N_NAME); ?></th>
+                    <td>
+                        <fieldset>
+                            <textarea style="height: 200px;" class="regular-text code" name="include_folders" id="include_folders" placeholder="Blank for all folders in upload folder"><?php echo esc_attr($options["include_folders"]); ?></textarea>
+                        </fieldset>
+                    </td>
+                </tr>
             </tbody>
         </table>
         <?php wp_nonce_field('s3_media_upload_save_button', 's3_media_upload_button_form_nonce'); ?>

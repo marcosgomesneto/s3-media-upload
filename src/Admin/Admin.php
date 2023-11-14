@@ -34,6 +34,8 @@ class Admin
             $options['access_key_id'] = sanitize_text_field($_POST['access_key_id']);
             $options['secret_access_key'] = sanitize_text_field($_POST['secret_access_key']);
             $options['region'] = sanitize_text_field($_POST['region']);
+            $options['remove_local'] = $_POST['remove_local'] ? true : false;
+            $options['include_folders'] = sanitize_textarea_field($_POST['include_folders']);
 
             update_option(
                 's3_media_upload_options',

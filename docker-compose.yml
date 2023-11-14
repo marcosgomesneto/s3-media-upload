@@ -21,9 +21,9 @@ services:
       WORDPRESS_DEBUG: 0
     volumes:
       - wordpress:/var/www/html
-      - .:/var/www/html/wp-content/plugins/s3-upload
+      - .:/var/www/html/wp-content/plugins/s3-media-upload
       - C:\Dev\Coding\wordpress-plugins\woocommerce-image-sales:/var/www/html/wp-content/plugins/woocommerce-image-sales
-      - C:\Dev\Coding\wordpress-6.4.1-pt_BR\wordpress\wp-includes:/var/www/html/wp-includes
+      - C:\Dev\Coding\wordpress-plugins\amazon-s3-and-cloudfront.3.2.5\amazon-s3-and-cloudfront:/var/www/html/wp-content/plugins/amazon-s3-and-cloudfront
 volumes:
   wordpress:
 networks:
