@@ -1,0 +1,22 @@
+{
+    "name": "marcosgomesneto/s3-media-upload",
+    "description": "Upload media files to Amazon S3",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "S3MediaUpload\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Marcos Gomes Neto",
+            "email": "marcosgomesneto@gmail.com"
+        }
+    ],
+    "require": {
+        "aws/aws-sdk-php": "^3.285"
+    },
+    "config": {
+        "platform-check": false
+    }
+}

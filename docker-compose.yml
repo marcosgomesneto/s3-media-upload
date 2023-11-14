@@ -1,0 +1,32 @@
+version: "3.1"
+services:
+  wordpress:
+    build: .
+    container_name: wordpress
+    restart: always
+    ports:
+      - 80:80
+    networks:
+      - network1
+    environment:
+      WORDPRESS_DB_HOST: s3-upload_devcontainer-db-1
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: mariadb
+      WORDPRESS_DB_NAME: mariadb
+      WORDPRESS_TABLE_PREFIX: wp_
+      WORDPRESS_CONFIG_EXTRA: |
+        /* Multisite */
+        define('WP_DEBUG', false );
+        define('WP_DEBUG_LOG', true);
+      WORDPRESS_DEBUG: 0
+    volumes:
+      - wordpress:/var/www/html
+      - .:/var/www/html/wp-content/plugins/s3-upload
+      - C:\Dev\Coding\wordpress-plugins\woocommerce-image-sales:/var/www/html/wp-content/plugins/woocommerce-image-sales
+      - C:\Dev\Coding\wordpress-6.4.1-pt_BR\wordpress\wp-includes:/var/www/html/wp-includes
+volumes:
+  wordpress:
+networks:
+  network1:
+    name: s3-upload_devcontainer_default
+    external: true
