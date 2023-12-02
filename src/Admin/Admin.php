@@ -1,48 +1,56 @@
 <?php
 
-namespace S3MediaUpload\Admin;
+namespace AwsServicesKit\Admin;
 
-defined('ABSPATH') || exit;
+use AwsServicesKit\Admin\Settings\AwsRekognitionSettings;
+use AwsServicesKit\Admin\Settings\FaceRecognitionSettings;
+use AwsServicesKit\Admin\Settings\GeneralSettings;
+use AwsServicesKit\Admin\Settings\Settings;
+use AwsServicesKit\Admin\Settings\S3UploadSettings;
+
+defined( 'ABSPATH' ) || exit;
 
 
-class Admin
-{
-    public $template_path;
+class Admin {
 
-    public function __construct()
-    {
-        $this->template_path = S3_MEDIA_UPLOAD_PLUGIN_PATH . 'src/Admin/templates/';
-        add_action('admin_menu', [$this, 'admin_menu']);
-    }
 
-    public function admin_menu()
-    {
-        add_submenu_page(
-            'tools.php',
-            'S3 Media Upload',
-            'S3 Media Upload',
-            'manage_options',
-            's3-media-upload',
-            [$this, 'render_html']
-        );
-    }
+	public function __construct() {
+		new View();
+		add_action( 'wp_ajax_awskit_upload_search_image', [ $this, 'upload_search_image' ] );
+		add_action( 'wp_ajax_nopriv_awskit_upload_search_image', [ $this, 'upload_search_image' ] );
+	}
 
-    public function render_html()
-    {
-        if (isset($_POST['s3_media_upload_button_form_nonce']) && check_admin_referer('s3_media_upload_save_button', 's3_media_upload_button_form_nonce')) {
-            $options['bucket_name'] = sanitize_text_field($_POST['bucket_name']);
-            $options['access_key_id'] = sanitize_text_field($_POST['access_key_id']);
-            $options['secret_access_key'] = sanitize_text_field($_POST['secret_access_key']);
-            $options['region'] = sanitize_text_field($_POST['region']);
-            $options['remove_local'] = $_POST['remove_local'] ? true : false;
-            $options['include_folders'] = sanitize_textarea_field($_POST['include_folders']);
+	public function upload_search_image() {
+		$upload_dir = wp_upload_dir();
+		$upload_path = $upload_dir['basedir'] . '/awskit/user-search/';
+		$upload_url = $upload_dir['baseurl'] . '/awskit/user-search/';
+		if ( ! file_exists( $upload_path ) ) {
+			wp_mkdir_p( $upload_path );
+		}
+		$filename = basename( $_FILES['awskitFileUpload']['name'] );
+		$upload_file = $upload_path . $filename;
+		$upload_url_file = $upload_url . $filename;
 
-            update_option(
-                's3_media_upload_options',
-                $options
-            );
-        }
-        $options = get_option('s3_media_upload_options');
-        include_once($this->template_path . 'config-page.php');
-    }
+		$counter = 1;
+		$file_ext = pathinfo( $upload_file, PATHINFO_EXTENSION );
+		$file_name_without_ext = pathinfo( $upload_file, PATHINFO_FILENAME );
+		while ( file_exists( $upload_file ) ) {
+			$new_filename = $file_name_without_ext . '-' . $counter;
+			$upload_file = $upload_path . $new_filename . '.' . $file_ext;
+			$upload_url_file = $upload_url . $new_filename . '.' . $file_ext;
+			$counter++;
+		}
+
+		if ( move_uploaded_file( $_FILES['awskitFileUpload']['tmp_name'], $upload_file ) ) {
+			$redirect_url = get_site_url() . '/?s=&post_type=product&awskit_image=' . $upload_file;
+
+			wp_send_json( [ 'success' => true, 'redirect_url' => $redirect_url ] );
+
+		} else {
+			wp_send_json( [ 'success' => false ] );
+		}
+		wp_die();
+	}
+
+
 }

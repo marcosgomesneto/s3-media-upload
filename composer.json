@@ -1,10 +1,10 @@
 {
-    "name": "marcosgomesneto/s3-media-upload",
+    "name": "marcosgomesneto/aws-services-kit",
     "description": "Upload media files to Amazon S3",
     "type": "wordpress-plugin",
     "autoload": {
         "psr-4": {
-            "S3MediaUpload\\": "src/"
+            "AwsServicesKit\\": "src/"
         }
     },
     "authors": [
@@ -18,5 +18,9 @@
     },
     "config": {
         "platform-check": false
+    },
+    "require-dev": {
+        "php-stubs/wordpress-stubs": "^6.4",
+        "php-stubs/woocommerce-stubs": "^8.3"
     }
 }

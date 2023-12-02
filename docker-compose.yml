@@ -9,7 +9,7 @@ services:
     networks:
       - network1
     environment:
-      WORDPRESS_DB_HOST: s3-upload_devcontainer-db-1
+      WORDPRESS_DB_HOST: aws-services-kit_devcontainer-db-1
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: mariadb
       WORDPRESS_DB_NAME: mariadb
@@ -21,12 +21,13 @@ services:
       WORDPRESS_DEBUG: 0
     volumes:
       - wordpress:/var/www/html
-      - .:/var/www/html/wp-content/plugins/s3-media-upload
+      - .:/var/www/html/wp-content/plugins/aws-services-kit
       - C:\Dev\Coding\wordpress-plugins\woocommerce-image-sales:/var/www/html/wp-content/plugins/woocommerce-image-sales
       - C:\Dev\Coding\wordpress-plugins\amazon-s3-and-cloudfront.3.2.5\amazon-s3-and-cloudfront:/var/www/html/wp-content/plugins/amazon-s3-and-cloudfront
+      - C:\Dev\Projects\Other Clients\polopix\wc-polo-payments:/var/www/html/wp-content/plugins/wc-polo-payments
 volumes:
   wordpress:
 networks:
   network1:
-    name: s3-upload_devcontainer_default
+    name: aws-services-kit_devcontainer_default
     external: true
