@@ -39,5 +39,32 @@ class FaceRecognitionConfig extends AbstractConfig {
 	 */
 	public $form_theme = 'light';
 
+	/**
+	 * Form Title
+	 *
+	 * @var string
+	 */
+	public $form_title = 'Search Products by Image';
 
+	/**
+	 * Button Camera Text
+	 *
+	 * @var string
+	 */
+	public $button_camera_text = 'From Camera';
+
+
+	/**
+	 * Button Gallery Text
+	 *
+	 * @var string
+	 */
+	public $button_gallery_text = 'From Gallery';
+
+	/**
+	 * Button Search Text
+	 *
+	 * @var string
+	 */
+	public $button_search_text = 'Search Now';
 }

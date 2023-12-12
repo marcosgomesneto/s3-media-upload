@@ -16,8 +16,10 @@ class Frontend {
 	}
 
 	public function face_search_form_shortcode() {
-		$theme = ConfigLoader::get()->face_recognition->form_theme;
+		ob_start();
+		$options = ConfigLoader::get()->getOptions()['face_recognition'];
 		require_once S3_MEDIA_UPLOAD_PLUGIN_PATH . 'src/Frontend/templates/face-search-form.php';
+		return ob_get_clean();
 	}
 
 	public function enqueue_scripts() {
@@ -26,18 +28,17 @@ class Frontend {
 	}
 
 	public function posts_search( $search, $wp_query ) {
-		try {
-			global $wpdb;
-			if ( ! is_admin() && $wp_query->is_main_query() && $wp_query->is_search() && isset( $_GET['awskit_image'] ) ) {
+		global $wpdb;
+		if ( ! is_admin() && $wp_query->is_main_query() && $wp_query->is_search() && isset( $_GET['awskit_image'] ) ) {
+			try {
 				$recogniztion = RekognitionService::getInstance();
 				$productIds = $recogniztion->searchFacesByImage( $_GET['awskit_image'] );
-
-				$search = $wpdb->prepare( "AND ({$wpdb->posts}.ID IN (" . implode( ',', $productIds ) . "))" );
+			} catch (\Exception $e) {
+				$productIds = [];
 			}
-		} catch (\Exception $e) {
-			//silent
-		}
+			$search = $wpdb->prepare( "AND ({$wpdb->posts}.ID IN (" . implode( ',', $productIds ) . "))" );
 
+		}
 		return $search;
 	}
 }

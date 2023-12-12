@@ -2,9 +2,12 @@
   background-color: #e0e0e0;
   text-align: center;
   font-size: 20px;
-  padding: 15px;
   border-radius: 5px;
   width: 100%;
+}
+
+.awskit-search-container-wrap {
+  padding: 15px;
 }
 
 .awskit-search-container .awskit-upload-mode {
@@ -226,38 +229,116 @@
 .awskit-search-container.awskit-dark .awskit-upload-mode {
   background-image: repeating-linear-gradient(
       180deg,
-      #546064,
-      #546064 10px,
+      #31393b,
+      #31393b 10px,
       transparent 10px,
       transparent 20px,
-      #546064 20px
+      #31393b 20px
     ),
     repeating-linear-gradient(
       270deg,
-      #546064,
-      #546064 10px,
+      #31393b,
+      #31393b 10px,
       transparent 10px,
       transparent 20px,
-      #546064 20px
+      #31393b 20px
     ),
     repeating-linear-gradient(
       0deg,
-      #546064,
-      #546064 10px,
+      #31393b,
+      #31393b 10px,
       transparent 10px,
       transparent 20px,
-      #546064 20px
+      #31393b 20px
     ),
     repeating-linear-gradient(
       90deg,
-      #546064,
-      #546064 10px,
+      #31393b,
+      #31393b 10px,
       transparent 10px,
       transparent 20px,
-      #546064 20px
+      #31393b 20px
     );
+  background-image: none;
 }
 
 .awskit-search-container.awskit-dark .awskit-roller div:after {
   background: #07416a;
+}
+
+.awskit-take-picture-button {
+  z-index: 10000;
+  background-color: #242e35;
+  color: #fff;
+  position: absolute;
+  bottom: 40px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  padding: 15px;
+  border-radius: 5px;
+  text-transform: uppercase;
+}
+
+.awskit-camera-close-button {
+  z-index: 10000;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  background-color: #242e35;
+}
+
+.awskit-camera-close-button:after,
+.awskit-camera-close-button:before {
+  position: absolute;
+  content: " ";
+  height: 33px;
+  width: 4px;
+  border-radius: 30px;
+  background-color: #ddd;
+}
+
+.awskit-camera-close-button:after {
+  transform: rotate(45deg);
+}
+
+.awskit-camera-close-button:before {
+  transform: rotate(-45deg);
+}
+
+.awskit-camera-wrap {
+  z-index: 9999999999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .awskit-search-container .awskit-buttons {
+    flex-direction: column;
+  }
+  .awskit-search-container .awskit-buttons > button {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
 }

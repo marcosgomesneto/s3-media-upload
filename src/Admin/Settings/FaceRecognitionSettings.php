@@ -44,6 +44,10 @@ class FaceRecognitionSettings extends Settings {
 		$config->face_recognition->update( 'enabled', isset( $_POST['awsrek_active'] ) ? true : false );
 		$config->face_recognition->update( 'collection', sanitize_text_field( $_POST['awsrek_collection'] ) );
 		$config->face_recognition->update( 'form_theme', sanitize_text_field( $_POST['awsrek_form_theme'] ) );
+		$config->face_recognition->update( 'form_title', sanitize_text_field( $_POST['awsrek_form_title'] ) );
+		$config->face_recognition->update( 'button_gallery_text', sanitize_text_field( $_POST['awsrek_button_gallery_text'] ) );
+		$config->face_recognition->update( 'button_camera_text', sanitize_text_field( $_POST['awsrek_button_camera_text'] ) );
+		$config->face_recognition->update( 'button_search_text', sanitize_text_field( $_POST['awsrek_button_search_text'] ) );
 
 		$config->face_recognition->save();
 	}

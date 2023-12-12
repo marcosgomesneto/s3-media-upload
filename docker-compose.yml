@@ -1,15 +1,27 @@
 version: "3.1"
 services:
+  db:
+    image: mariadb:10.4
+    volumes:
+      - mariadb:/var/lib/mysql
+    ports:
+      - 3306:3306
+  mitmproxy:
+    image: mitmproxy/mitmproxy
+    ports:
+      - 8080:8080
+      - 8081:8081
+    volumes:
+      - ~/.mitmproxy:/home/mitmproxy/.mitmproxy
+    command: "mitmweb --web-host 0.0.0.0 --set block_global=false"
   wordpress:
     build: .
     container_name: wordpress
     restart: always
     ports:
       - 80:80
-    networks:
-      - network1
     environment:
-      WORDPRESS_DB_HOST: aws-services-kit_devcontainer-db-1
+      WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: mariadb
       WORDPRESS_DB_NAME: mariadb
@@ -22,12 +34,13 @@ services:
     volumes:
       - wordpress:/var/www/html
       - .:/var/www/html/wp-content/plugins/aws-services-kit
-      - C:\Dev\Coding\wordpress-plugins\woocommerce-image-sales:/var/www/html/wp-content/plugins/woocommerce-image-sales
-      - C:\Dev\Coding\wordpress-plugins\amazon-s3-and-cloudfront.3.2.5\amazon-s3-and-cloudfront:/var/www/html/wp-content/plugins/amazon-s3-and-cloudfront
+      - C:\Dev\Coding\wordpress-plugins\woocommerce-mercadopago.7.0.4\woocommerce-mercadopago:/var/www/html/wp-content/plugins/woocommerce-mercadopago
       - C:\Dev\Projects\Other Clients\polopix\wc-polo-payments:/var/www/html/wp-content/plugins/wc-polo-payments
+      - C:\Dev\Coding\wordpress-plugins\woocommerce-image-sales:/var/www/html/wp-content/plugins/woocommerce-image-sales
 volumes:
   wordpress:
-networks:
-  network1:
-    name: aws-services-kit_devcontainer_default
     external: true
+    name: s3-upload_wordpress
+  mariadb:
+    external: true
+    name: s3-media-upload_devcontainer_mariadb-data
