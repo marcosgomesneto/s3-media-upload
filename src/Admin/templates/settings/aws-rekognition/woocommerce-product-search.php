@@ -73,6 +73,16 @@ defined( 'ABSPATH' ) || exit;
 				</tr>
 				<tr>
 					<th scope="row">
+						<?php esc_html_e( 'Form Description', \S3_MEDIA_UPLOAD_I18N_NAME ); ?>
+					</th>
+
+					<td>
+						<input type="text" class="regular-text" name="awsrek_form_description"
+							id="awsrek_form_description" value="<?php esc_html_e( $options->form_description ); ?>">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
 						<?php esc_html_e( 'Gallery Button Text', \S3_MEDIA_UPLOAD_I18N_NAME ); ?>
 					</th>
 
@@ -80,17 +90,6 @@ defined( 'ABSPATH' ) || exit;
 						<input type="text" class="regular-text" name="awsrek_button_gallery_text"
 							id="awsrek_button_gallery_text"
 							value="<?php echo esc_attr( $options->button_gallery_text ); ?>">
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">
-						<?php esc_html_e( 'Camera Button Text', \S3_MEDIA_UPLOAD_I18N_NAME ); ?>
-					</th>
-
-					<td>
-						<input type="text" class="regular-text" name="awsrek_button_camera_text"
-							id="awsrek_button_camera_text"
-							value="<?php echo esc_attr( $options->button_camera_text ); ?>">
 					</td>
 				</tr>
 				<tr>

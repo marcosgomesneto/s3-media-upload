@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "formulahendry.auto-close-tag",
+        "devsense.composer-php-vscode",
+        "devsense.phptools-vscode",
+        "esbenp.prettier-vscode"
+    ]
+}

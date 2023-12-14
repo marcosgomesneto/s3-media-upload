@@ -17,7 +17,7 @@ class Frontend {
 
 	public function face_search_form_shortcode() {
 		ob_start();
-		$options = ConfigLoader::get()->getOptions()['face_recognition'];
+		$options = (array) ConfigLoader::get()->face_recognition;
 		require_once S3_MEDIA_UPLOAD_PLUGIN_PATH . 'src/Frontend/templates/face-search-form.php';
 		return ob_get_clean();
 	}

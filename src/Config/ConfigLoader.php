@@ -17,12 +17,14 @@ class ConfigLoader {
 	private static $instance;
 
 	private $key = 'aws_services_kit_options';
+
 	/**
 	 * Face Recognition Config
 	 *
 	 * @var FaceRecognitionConfig
 	 */
 	public $face_recognition;
+
 	public $general;
 	public $s3_upload;
 

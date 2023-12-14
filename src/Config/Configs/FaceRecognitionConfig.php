@@ -47,12 +47,18 @@ class FaceRecognitionConfig extends AbstractConfig {
 	public $form_title = 'Search Products by Image';
 
 	/**
+	 * Form Description
+	 *
+	 * @var string
+	 */
+	public $form_description = "Upload a person`s face to find all photos they appear in within our database.";
+
+	/**
 	 * Button Camera Text
 	 *
 	 * @var string
 	 */
 	public $button_camera_text = 'From Camera';
-
 
 	/**
 	 * Button Gallery Text
