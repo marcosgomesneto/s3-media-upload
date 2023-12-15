@@ -20,6 +20,8 @@
 .awskit-search-container .awskit-upload-mode {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 20px;
   padding: 20px;
   background-image: repeating-linear-gradient(
