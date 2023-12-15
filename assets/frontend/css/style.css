@@ -11,8 +11,10 @@
 }
 
 .awskit-search-container p {
+  margin-top: 15px;
   font-size: 16px;
   color: #00000088;
+  max-width: 680px;
 }
 
 .awskit-search-container .awskit-upload-mode {

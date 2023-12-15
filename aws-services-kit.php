@@ -3,15 +3,15 @@
 /**
  * AWS Services Kit
  *
- * @link              https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment
- * @since             1.1.0
+ * @link              https://github.com/marcosgomesneto/aws-services-kit
+ * @since             1.0.0
  * @package           AwsServicesKit
  *
  * @wordpress-plugin
  * Plugin Name:       		AWS Services Kit
  * Plugin URI:        		https://github.com/marcosgomesneto/aws-services-kit
  * Description:       		AWS Services: S3 Upload, Face Recognition Search, WooCommerce Integration
- * Version:           		1.0.0
+ * Version:           		1.0.1
  * Requires at least: 		5.2
  * Requires PHP:      		7.0
  * WC requires at least:	3.0
