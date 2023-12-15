@@ -12,17 +12,17 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
   var mode = "upload";
 
-  galleryButton.addEventListener("click", () => {
+  galleryButton?.addEventListener("click", () => {
     fileUpload.click();
   });
 
-  cancelButton.addEventListener("click", () => {
+  cancelButton?.addEventListener("click", () => {
     uploadMode.style.display = "flex";
     selectedMode.style.display = "none";
     fileUpload.value = "";
   });
 
-  searchForm.addEventListener("submit", (event) => {
+  searchForm?.addEventListener("submit", (event) => {
     event.preventDefault();
     if (mode == "camera") {
       canvasPicture.toBlob(function (blob) {
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       });
   };
 
-  fileUpload.addEventListener("change", (event) => {
+  fileUpload?.addEventListener("change", (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
 
