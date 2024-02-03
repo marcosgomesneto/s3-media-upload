@@ -36,7 +36,9 @@ services:
       - .:/var/www/html/wp-content/plugins/aws-services-kit
       - C:\Dev\Coding\wordpress-plugins\woocommerce-mercadopago.7.0.4\woocommerce-mercadopago:/var/www/html/wp-content/plugins/woocommerce-mercadopago
       - C:\Dev\Projects\Other Clients\polopix\wc-polo-payments:/var/www/html/wp-content/plugins/wc-polo-payments
-      - C:\Dev\Coding\wordpress-plugins\woocommerce-image-sales:/var/www/html/wp-content/plugins/woocommerce-image-sales
+      - C:\Dev\Projects\Best-Projects\woocommerce-image-sales:/var/www/html/wp-content/plugins/woocommerce-image-sales
+      - C:\Dev\Projects\Best-Projects\Pix Payment\woocommerce-pagarme-pix-payment:/var/www/html/wp-content/plugins/wc-pagarme-pix-payment
+      - C:\Dev\Projects\Learning\wordpress-block\checkout-block-example:/var/www/html/wp-content/plugins/checkout-block-example
 volumes:
   wordpress:
     external: true

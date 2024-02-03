@@ -89,6 +89,10 @@ class Core {
 			return;
 
 		$download = end( $downloads );
+		$base_url = get_bloginfo( 'url' );
+		if ( strpos( $download['file'], $base_url ) === false )
+			return;
+
 		$uploadUrl = $wp_upload_dir['baseurl'];
 		$currentFilePath = str_replace( $uploadUrl, '', $download['file'] );
 		$local_file_path = $wp_upload_dir['basedir'] . $currentFilePath;
