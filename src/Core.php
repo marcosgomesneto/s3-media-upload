@@ -57,8 +57,17 @@ class Core {
 	 * @return void
 	 */
 	public function after_product_save( $product ) {
+
 		try {
-			$this->upload( $product );
+			if ( $this->currentProduct == $product->get_id() || ! $product->is_downloadable() )
+				return;
+			$this->currentProduct = $product->get_id();
+
+			$fileUrl = $this->upload( $product );
+
+			if ( ! empty( $fileUrl ) )
+				$this->recognizeFaces( $product, $fileUrl );
+
 		} catch (Exception $ex) {
 			throw new Exception( $ex->getMessage() );
 		}
@@ -68,16 +77,11 @@ class Core {
 	 * Upload image download to S3 Bucket
 	 *
 	 * @param \WC_Product $product 
-	 * @return void
+	 * @return string | null
 	 */
 	private function upload( $product ) {
-		if ( $this->currentProduct == $product->get_id() || ! $product->is_downloadable() )
-			return;
-
-		$this->currentProduct = $product->get_id();
 
 		$uploaded = get_post_meta( $this->currentProduct, '_s3mu_uploaded', true );
-		$indexedFaces = get_post_meta( $this->currentProduct, '_awskit_indexed_faces', true );
 
 		if ( $uploaded == 'yes' )
 			return;
@@ -90,8 +94,11 @@ class Core {
 
 		$download = end( $downloads );
 		$base_url = get_bloginfo( 'url' );
-		if ( strpos( $download['file'], $base_url ) === false )
-			return;
+		if ( strpos( $download['file'], $base_url ) === false ) {
+			update_post_meta( $this->currentProduct, '_s3mu_uploaded', 'yes' );
+			return $download['file'];
+		}
+
 
 		$uploadUrl = $wp_upload_dir['baseurl'];
 		$currentFilePath = str_replace( $uploadUrl, '', $download['file'] );
@@ -110,28 +117,37 @@ class Core {
 
 			$config = ConfigLoader::get();
 
-			if ( $config->face_recognition->enabled ) {
-				$recognition = RekognitionService::getInstance();
-				$recognition->indexFaces(
-					$config->face_recognition->collection,
-					$product->get_id(),
-					$s3->extractFileKeyFromUrl( $result['ObjectURL'] )
-				);
-
-				update_post_meta( $this->currentProduct, '_awskit_indexed_faces', 'yes' );
+			if ( $config->s3_upload->remove_local ) {
+				unlink( $local_file_path );
 			}
 
+			return $result['ObjectURL'];
 
 		} catch (Exception $e) {
 			throw new Exception( $e->getMessage() );
 		}
+	}
 
+	private function recognizeFaces( $product, $fileUrl ) {
+		$indexedFaces = get_post_meta( $product->get_id(), '_awskit_indexed_faces', true );
+
+		if ( $indexedFaces === 'yes' )
+			return;
 
 		$config = ConfigLoader::get();
 
-		if ( $config->s3_upload->remove_local ) {
-			unlink( $local_file_path );
+		if ( $config->face_recognition->enabled ) {
+			$s3 = S3Service::getInstance();
+			$recognition = RekognitionService::getInstance();
+			$recognition->indexFaces(
+				$config->face_recognition->collection,
+				$product->get_id(),
+				$s3->extractFileKeyFromUrl( $fileUrl )
+			);
+
+			update_post_meta( $product->get_id(), '_awskit_indexed_faces', 'yes' );
 		}
+
 	}
 
 	/**
