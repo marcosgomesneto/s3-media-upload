@@ -57,7 +57,6 @@ class Core {
 	 * @return void
 	 */
 	public function after_product_save( $product ) {
-
 		try {
 			if ( $this->currentProduct == $product->get_id() || ! $product->is_downloadable() )
 				return;
